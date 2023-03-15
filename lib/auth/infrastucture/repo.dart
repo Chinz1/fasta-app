@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:fasta/api_client/domain.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fasta/auth/domain/repo.dart';
@@ -9,6 +10,7 @@ import 'package:fasta/errrors/app_error.dart';
 import 'package:fasta/models/otp_models.dart';
 import 'package:fasta/typedef.dart/typedefs.dart';
 import 'package:fasta/models/otp.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthImpl implements Auth {
   final ApiClient _client;
@@ -21,6 +23,8 @@ class AuthImpl implements Auth {
       final res = await _client.post(Endpoints.auth.login, body: body);
       const ServerAddress().token = res.data['meta']['token'];
       return const Right(unit);
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -49,6 +53,8 @@ class AuthImpl implements Auth {
       log(otpRes.toString());
       // confirmOtp(otpID: otpID, otpCode: otpCode, userID: userID)
       return Right(OTPModel.fromJson(res.data));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -65,8 +71,10 @@ class AuthImpl implements Auth {
       };
       final res = await _client.post(Endpoints.auth.confirmOTP, body: body);
       const ServerAddress().token = res.data['meta']['token'];
-      
+
       return const Right(unit);
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -77,6 +85,8 @@ class AuthImpl implements Auth {
     try {
       final res = await _client.post(Endpoints.auth.resendOTP);
       return Right(OTPModel.fromJson(res.data));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -92,6 +102,8 @@ class AuthImpl implements Auth {
     try {
       await _client.post(Endpoints.auth.resendOTP);
       return const Right(unit);
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -114,6 +126,8 @@ class AuthImpl implements Auth {
           otpCode: int.parse(e.data['data']['code'] as String),
           userID: e.data['data']['userId']);
       return const Right(unit);
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -124,8 +138,34 @@ class AuthImpl implements Auth {
     try {
       final res = await _client.post(Endpoints.auth.resendOTP);
       return Right(OTPModel.fromJson(res.data));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  ErrorOr<Unit> googleSignIn() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        await _client.post(Endpoints.auth.googleSignIn, body: {
+          'idToken': googleSignInAuthentication.idToken,
+          'code': googleSignInAuthentication.accessToken
+        });
+        return const Right(unit);
+      }
+      return const Right(unit);
+    } catch (e) {
+      return const Right(unit);
     }
   }
 }

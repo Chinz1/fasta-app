@@ -41,9 +41,10 @@ class Coordinate {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         Secrets.aPI_KEY, // Google Maps API Key
         PointLatLng(latitude, longitude),
+        
         PointLatLng(
             destinationCoordinate.latitude, destinationCoordinate.longitude),
-        travelMode: TravelMode.transit,
+        travelMode: TravelMode.driving,
       );
       if (result.points.isNotEmpty) {
         for (PointLatLng point in result.points) {

@@ -1,6 +1,7 @@
 import 'package:fasta/core/app_state.dart';
 import 'package:fasta/global_widgets/scaffolds/custom_scaffold.dart';
 import 'package:fasta/inter_app_widgets/order_preview.dart';
+import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/rider_app/orders/new_order.dart';
 import 'package:fasta/shipping/application/bloc/shipment_handler_bloc.dart';
 import 'package:fasta/shipping/domain/entity/delivery.dart';
@@ -37,6 +38,7 @@ class _OrdersViewRiderState extends State<OrdersViewRider> {
           .add(const ShipmentHandlerEvent.getAllDeliveriesPendingInvitations()),
       child: CustomScaffold(
         type: AppBarType.profile,
+        iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
         onPressed: () {},
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,32 +50,19 @@ class _OrdersViewRiderState extends State<OrdersViewRider> {
             SizedBox(
               height: 22.h,
             ),
-            // BlocBuilder<ShipmentHandlerBloc, ShipmentHandlerState>(
-            //   builder: (context, state) {
-            //     return (state.pendingInvitations != null)
-            //         ? GestureDetector(
-            //             onTap: () {},
-            //             child: OrderPreview(
-            //               name: 'state.pendingInvitations!.',
-            //               deliveryId: ' state.allDelivery![index].tripId',
-            //               to: state.pendingInvitations!.to,
-            //               from: state.pendingInvitations!.form,
-            //               distance: state.pendingInvitations!.estTime,
-            //             ),
-            //           )
-            //         : const Offstage();
-            //   },
-            // ),
             BlocListener<ShipmentHandlerBloc, ShipmentHandlerState>(
               listenWhen: (previous, current) => isTap,
               listener: (context, state) {
                 if (state.status == AppState.success) {
-                  Navigator.pushNamed(context, NewOrder.route,
-                      arguments: state.delivery);
+                  // Navigator.pushNamed(context, NewOrder.route,
+                  //     arguments: state.delivery);
                 } else if (state.status == AppState.success) {}
               },
               child: BlocBuilder<ShipmentHandlerBloc, ShipmentHandlerState>(
                 builder: (context, state) {
+                  if (state.allDelivery?.isEmpty??false){
+                    return const Center(child: Text('No Order Yet'),);
+                  }
                   return Column(
                       children: List.generate(state.allDelivery?.length ?? 0,
                           (index) {
@@ -81,14 +70,26 @@ class _OrdersViewRiderState extends State<OrdersViewRider> {
                       onTap: () {
                         if (state.allDelivery![index].status
                                 .trim()
-                                .toUpperCase() ==
+                                .toUpperCase() ==      
                             'accepted'.toUpperCase()) {
                           isTap = true;
-                          context.read<ShipmentHandlerBloc>().add(
+                         context.read<ShipmentHandlerBloc>().add(
                               ShipmentHandlerEvent.getADelivery(
-                                  state.allDelivery![index].id.toString(),
+                                  state.allDelivery![index].userId.toString(),
                                   Owner.rider));
-                        } else {
+                                  Navigator.pushNamed(context, NewOrder.route,
+                      arguments: state.delivery);
+                        } else if (state.allDelivery![index].status
+                                .trim()
+                                .toUpperCase() ==
+                            'driver-completed'.toUpperCase()||state.allDelivery![index].status
+                                .trim()
+                                .toUpperCase() ==  
+                            'completed'.toUpperCase()){
+                              context.read<ShipmentHandlerBloc>().add(
+                              ShipmentHandlerEvent.getADelivery(
+                                  state.allDelivery![index].userId.toString(),
+                                  Owner.rider));
                           Navigator.pushNamed(context, OrderReceipt.route,
                               arguments: state.allDelivery![index]);
                         }
@@ -99,6 +100,7 @@ class _OrdersViewRiderState extends State<OrdersViewRider> {
                         from: state.allDelivery![index].fromAddress,
                         distance: state.allDelivery![index].distance,
                         deliveryId: state.allDelivery![index].id,
+                        owner: Owner.rider,
                       ),
                     );
                   }));
