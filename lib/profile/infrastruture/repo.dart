@@ -24,8 +24,6 @@ class ProfileDataImpl implements ProfileData {
     try {
       await _client.post(Endpoints.profile.updateProfile, body: arg.toMap());
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -36,8 +34,6 @@ class ProfileDataImpl implements ProfileData {
     try {
       final res = await _client.get(Endpoints.profile.getProfile);
       return Right(UserModel.fromJson(res.data));
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -51,8 +47,6 @@ class ProfileDataImpl implements ProfileData {
       log(file.first.toString());
       await _client.post(Endpoints.profile.uploadUserPhoto, body: image);
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -64,9 +58,7 @@ class ProfileDataImpl implements ProfileData {
       final body = {'email': emailAddress};
       final res = await _client.post(Endpoints.email.resendEmail, body: body);
       return Right((res.data['data']['otpId'] as int).toString());
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -81,9 +73,7 @@ class ProfileDataImpl implements ProfileData {
       otpRes.fold((l) => null, (r) => a =r);
       await _client.post(Endpoints.email.verifyEmail, body: {'otpId':arg.otpId,'otpCode':a.toString()});
       return const Right(unit);
-    } on  DioError catch (e) {
-      return Left(e.fromDioError);
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -104,8 +94,6 @@ class ProfileDataImpl implements ProfileData {
       //     otpCode: int.parse(e.data['data']['code'] as String),
       //     userID: e.data['data']['userId']);
       return  Right(int.parse(e.data['data']['code'] as String),);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }

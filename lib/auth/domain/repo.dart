@@ -23,5 +23,4 @@ abstract class Auth {
       required String confirmPassword});
   ErrorOr<Unit> confirmOtp(
       {required int otpID, required int otpCode, required int userID});
-  ErrorOr<Unit> googleSignIn();
 }

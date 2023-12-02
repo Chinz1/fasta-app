@@ -8,14 +8,12 @@ enum AppBarType { profile, backButton, empty }
 
 class CustomScaffold extends Scaffold {
   final VoidCallback? onPressed;
-  final VoidCallback? iconPressed;
   final AppBarType type;
   final AppBar? customAppBar;
 
   CustomScaffold(
       {Key? key,
       this.onPressed,
-      this.iconPressed,
       this.customAppBar,
       required this.type,
       required Widget child})
@@ -29,9 +27,9 @@ class CustomScaffold extends Scaffold {
             backgroundColor: FastaColors.primary2,
             extendBody: true,
             appBar: (type == AppBarType.backButton)
-                ? AppBarWithBackButton(onPressed: onPressed!,iconPressed: iconPressed!,)
+                ? AppBarWithBackButton(onPressed: onPressed!)
                 : (type == AppBarType.profile)
-                    ? AppBarWithAvater(onPressed: onPressed!, IconPressed: iconPressed!,)
+                    ? AppBarWithAvater(onPressed: onPressed!)
                     : customAppBar,
             body: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),

@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:fasta/shipping/domain/entity/delivery.dart';
 import 'package:fasta/shipping/domain/entity/delivery_invitations.dart';
 import 'package:fasta/shipping/domain/entity/delivery_model.dart';
-import 'package:fasta/shipping/domain/entity/nearby_rider.dart';
 import 'package:fasta/shipping/infrastructure/models/delivery_dto.dart';
 import 'package:fasta/shipping/infrastructure/repo.dart';
 import 'package:fasta/shipping/repository/arg.dart';
@@ -29,5 +28,4 @@ abstract class ShipmentData {
   ErrorOr<DeliveryModel> getADeliveryAsDriver(String deliveryInvitationId);
   ErrorOr<DeliveryModel> getADeliveryAsUser(String deliveryInvitationId);
   ErrorOr<List<DeliverySummaryDTO>> getAllDeliveriesInvitations();
-  ErrorOr<List<NearbyRider>> nearbyRiders(NearbyRider location);
 }

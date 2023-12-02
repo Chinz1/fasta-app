@@ -35,7 +35,7 @@ class _FastaTypeSelectionState extends State<FastaTypeSelection> {
                       style: FastaTextStyle.subtitle1,
                       children: [
                     TextSpan(
-                        text: 'ITEKKU?.',
+                        text: 'FASTA?.',
                         style: FastaTextStyle.subtitle1
                             .copyWith(fontWeight: FastaFontWeight.semiBold))
                   ]))),

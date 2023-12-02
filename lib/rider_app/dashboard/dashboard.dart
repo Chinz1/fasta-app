@@ -1,12 +1,9 @@
 import 'package:fasta/colors/colors.dart';
-import 'package:fasta/core/app_state.dart';
 import 'package:fasta/dashboard/add_interests.dart';
 import 'package:fasta/dashboard/widgets/container_with_image.dart';
-import 'package:fasta/extension/string.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_with_Avater.dart';
 import 'package:fasta/nav/bottom_nav_bar.dart';
 import 'package:fasta/profile/home.dart';
-import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/rider_app/dashboard/widgets/dashboard_overview.dart';
 import 'package:fasta/rider_app/nav/bottom_nav_bar.dart';
 import 'package:fasta/rider_app/orders/orders.dart';
@@ -16,7 +13,6 @@ import 'package:fasta/shipping/ongoing_orders.dart';
 import 'package:fasta/theming/size_config.dart';
 import 'package:fasta/typography/font_weights.dart';
 import 'package:fasta/typography/text_styles.dart';
-import 'package:fasta/wallet/bloc/paystack_bloc.dart';
 import 'package:fasta/wallet/cubit/wallet_cubit.dart';
 import 'package:fasta/wallet/transaction_histroy.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +44,6 @@ class _DashBoardViewRiderState extends State<DashBoardViewRider> {
         extendBody: true,
         backgroundColor: FastaColors.primary2,
         appBar: AppBarWithAvater(
-          IconPressed: ()=> Navigator.pushNamed(context, NotificationsView.route),
           onPressed: () => Navigator.pushNamed(context, ProfileView.route),
         ),
         body: SingleChildScrollView(
@@ -74,10 +69,10 @@ class _DashBoardViewRiderState extends State<DashBoardViewRider> {
                       'Wallet Balance',
                       style: FastaTextStyle.softSubtitle,
                     ),
-                    BlocBuilder<PaystackBloc, PaystackState>(
+                    BlocBuilder<WalletCubit, WalletState>(
                       builder: (context, state) {
-                        return Text((state.appState != AppState.success)?'NGN 0.00':
-                          '${state.balance?.amount??0.00}'.toAmount,
+                        return Text(
+                          'NGN ${state.amount}.00',
                           style: FastaTextStyle.headline6,
                         );
                       },

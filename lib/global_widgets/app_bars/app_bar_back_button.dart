@@ -1,13 +1,9 @@
 import 'package:fasta/colors/colors.dart';
-import 'package:fasta/push_notification/Bloc/NotificationBloc.dart';
 import 'package:fasta/theming/size_config.dart';
-import 'package:fasta/typography/font_weights.dart';
-import 'package:fasta/typography/text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppBarWithBackButton extends AppBar {
-  AppBarWithBackButton({Key? key, required VoidCallback onPressed,required VoidCallback iconPressed})
+  AppBarWithBackButton({Key? key, required VoidCallback onPressed})
       : super(
           key: key,
           bottomOpacity: 0,
@@ -29,31 +25,11 @@ class AppBarWithBackButton extends AppBar {
             ],
           ),
           actions: [
-            BlocBuilder<NotificationBloc, NotificationState>(
-                builder: (context, state) {
-                  final unreadCount = state.unreadCount.toString();
-                  return Stack(
-                      alignment: AlignmentDirectional.topCenter,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.notifications),
-                          color: FastaColors.primary,
-                          onPressed: iconPressed,
-                        ),
-                        Positioned(
-                          right:unreadCount.length==1?11:unreadCount.length==2?5:0,
-                          top: 5,
-                          child: Text( 
-                            unreadCount,
-                            style: FastaTextStyle.label.copyWith(
-                                color: FastaColors.alert,
-                                fontWeight: FastaFontWeight.extraBold,
-                                fontSize: 15),
-                          ),
-                        )
-                      ]);
-                },
-              ),
+            Icon(
+              Icons.notifications,
+              size: 28.h,
+              color: FastaColors.primary,
+            ),
             SizedBox(
               width: 23.w,
             )

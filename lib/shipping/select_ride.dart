@@ -2,7 +2,6 @@ import 'package:fasta/colors/colors.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/button_mixin.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_back_button.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/custom_button.dart';
-import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/shipping/order_details.dart';
 import 'package:fasta/shipping/repository/arg.dart';
 import 'package:fasta/shipping/widgets/elevated_container_circular.dart';
@@ -36,7 +35,6 @@ class _SelectRideState extends State<SelectRide>
       backgroundColor: FastaColors.primary2,
       appBar: AppBarWithBackButton(
         onPressed: () => Navigator.pop(context),
-        iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -111,9 +109,8 @@ class _RideOptions {
 }
 
 List<_RideOptions> _data = [
-  _RideOptions('bike', 'bike_small'),
-  _RideOptions('car', 'car'),
-  _RideOptions('van', 'delivery-van'),
-  _RideOptions('truck', 'container'),
+  _RideOptions('Bike', 'bike_small'),
+  _RideOptions('Car', 'car'),
+  _RideOptions('Mini Van', 'delivery-van'),
+  _RideOptions('Truck', 'container'),
 ];
-// bike, car, van, bus, truck

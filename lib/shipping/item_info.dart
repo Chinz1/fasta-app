@@ -9,7 +9,6 @@ import 'package:fasta/global_widgets/notifications/notify.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/button_mixin.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_back_button.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/custom_button.dart';
-import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/shipping/application/bloc/shipment_handler_bloc.dart';
 import 'package:fasta/shipping/application/map/shipment_bloc.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -36,7 +35,7 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController quatityController = TextEditingController();
   final TextEditingController valueController = TextEditingController();
-  final TextEditingController weightController = TextEditingController(text: '0.5kg');
+  final TextEditingController weightController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   ImageProvider? itemImage;
@@ -56,7 +55,7 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    arg = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    arg = (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
   }
 
   @override
@@ -85,7 +84,6 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
       backgroundColor: FastaColors.primary2,
       appBar: AppBarWithBackButton(
         onPressed: () => Navigator.pop(context),
-        iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -233,47 +231,18 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
                               SizedBox(
                                 height: 4.h,
                               ),
-                              // SizedBox(
-                              //   width: 131.w,
-                              //   child: TextFormField(
-                              //       controller: weightController,
-                              //       decoration: InputDecoration(
-                              //         hintText: 'Weight(KG)',
-                              //         border: OutlineInputBorder(
-                              //             borderRadius:
-                              //                 BorderRadius.circular(9.h)),
-                              //       )),
-                              // ),
-                              // ),
                               SizedBox(
                                 width: 131.w,
-                                child: DropdownButton<String>(
-                                    value:  weightController.text,
-                                    isDense: true,
-                                    isExpanded: true,
-                                    items: const [
-                                      DropdownMenuItem(
-                                          child: Text('0.0kg - 0.5kg'),
-                                          value: '0.5kg'),
-                                      DropdownMenuItem(
-                                          child: Text('0.5kg - 1kg'),
-                                          value: '1kg'),
-                                      DropdownMenuItem(
-                                          child: Text('1kg-2kg'),
-                                          value: '2kg'),
-                                       DropdownMenuItem(
-                                          child: Text('2kg-3kg'),
-                                          value: '3kg'),
-                                      DropdownMenuItem(
-                                          child: Text('3kg-4kg'),
-                                          value: '4kg')
-                                    ],
-                                    onChanged: (value) {
-                                      weightController.text = value!;
-                                      setState(() {});
-                                    }),
+                                child: TextFormField(
+                                    controller: weightController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Weight(KG)',
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(9.h)),
+                                    )),
                               ),
-                           
+                              // ),
                             ],
                           ),
                           Column(
@@ -303,7 +272,7 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
                                           child: Text('Fragile'),
                                           value: 'Fragile'),
                                       DropdownMenuItem(
-                                          child: Text('Non Fragile'),
+                                          child: Text('NonFragile'),
                                           value: 'NonFragile')
                                     ],
                                     onChanged: (value) {
@@ -481,7 +450,7 @@ class _ItemInfoState extends State<ItemInfo> with RoundedLoadingButtonMixin {
                                   weight: weightController.text,
                                   state: stateController.text,
                                   description: descriptionController.text,
-                                  image:itemPath?? '',
+                                  image: 'https://google.com',
                                   // image: itemPath??'https://google.com',
                                 ));
                         context

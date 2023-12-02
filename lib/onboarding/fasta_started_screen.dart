@@ -40,7 +40,7 @@ class _FastaStartedScreenState extends State<FastaStartedScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.asset(
-                        'assets/Logofull.png',
+                        'assets/splash_black.png',
                       ),
                       SizedBox(
                         height: 80.h,
@@ -63,7 +63,7 @@ class _FastaStartedScreenState extends State<FastaStartedScreen> {
                             style: TextStyles.subtitle1,
                             children: <TextSpan>[
                               TextSpan(
-                                  text: ' ITEKKU', style: TextStyles.subtitle01),
+                                  text: ' FASTA', style: TextStyles.subtitle01),
                             ]),
                       ),
                       SizedBox(
@@ -112,7 +112,7 @@ class _FastaStartedScreenState extends State<FastaStartedScreen> {
                         },
                         child: Row(
                           children: [
-                            const Text('I am new to ITEKKU'),
+                            const Text('I am new to FASTA'),
                             const Spacer(),
                             Image.asset(
                               'assets/forward_icon.png',

@@ -25,18 +25,17 @@ class UserModel extends User {
             avatarUrl: avatarUrl,
             userId: fastaUserId,
             phoneNumber: phoneNumber,
-            emailVerified:emailVerified?? false,
             id: id);
 
   @Deprecated('Use fromMap instead.')
   factory UserModel.fromJson(Map<String, dynamic> json) {
     json = json['data'];
-    return UserModel( 
+    return UserModel(
       fullName:
           json['profile']['firstName'] + ' ' + json['profile']['lastName'],
       email: json['email'],
-      state: json['profile']['state']??'',
-      city: json['profile']['city']??"",
+      state: json['profile']['state'],
+      city: json['profile']['city'],
       fastaUserId: json['profile']['userId'],
       phoneNumber: json['phoneNumber'],
       id: json['profile']['id'],
@@ -45,9 +44,9 @@ class UserModel extends User {
       suspended: json['suspended'],
       kycVerified: json['kycVerified'],
       addressKycVerified: json['addressKycVerified'],
-      gender: json['profile']['gender']??'',
-      dateOfBirth: json['profile']['dateOfBirth']??"",
-      avatarUrl: json['profile']['avatarUrl']??"",
+      gender: json['profile']['gender'],
+      dateOfBirth: json['profile']['dateOfBirth'],
+      avatarUrl: json['profile']['avatarUrl'],
     );
   }
 
@@ -56,8 +55,8 @@ class UserModel extends User {
       fullName:
           json['profile']['firstName'] + ' ' + json['profile']['lastName'],
       email: json['email'],
-      state: json['profile']['state']??"",
-      city: json['profile']['city']??"",
+      state: json['profile']['state'],
+      city: json['profile']['city'],
       fastaUserId: json['profile']['userId'],
       phoneNumber: json['phoneNumber'],
       id: json['profile']['id'],
@@ -66,9 +65,9 @@ class UserModel extends User {
       suspended: json['suspended'],
       kycVerified: json['kycVerified'],
       addressKycVerified: json['addressKycVerified'],
-      gender: json['profile']['gender']??"",
-      dateOfBirth: json['profile']['dateOfBirth']??"",
-      avatarUrl: json['profile']['avatarUrl']??"",
+      gender: json['profile']['gender'],
+      dateOfBirth: json['profile']['dateOfBirth'],
+      avatarUrl: json['profile']['avatarUrl'],
     );
   }
 }

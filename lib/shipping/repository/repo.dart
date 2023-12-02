@@ -3,7 +3,6 @@ import 'package:fasta/shipping/application/bloc/shipment_handler_bloc.dart';
 import 'package:fasta/shipping/domain/entity/delivery.dart';
 import 'package:fasta/shipping/domain/entity/delivery_invitations.dart';
 import 'package:fasta/shipping/domain/entity/delivery_model.dart';
-import 'package:fasta/shipping/domain/entity/nearby_rider.dart';
 import 'package:fasta/shipping/domain/repo.dart';
 import 'package:fasta/shipping/infrastructure/models/delivery_dto.dart';
 import 'package:fasta/shipping/infrastructure/repo.dart';
@@ -53,6 +52,4 @@ class ShipmentRepository {
           : _repo.getADeliveryAsUser(deliveryInvitationId);
   ErrorOr<List<DeliverySummaryDTO>> getAllDeliveriesInvitations() =>
       _repo.getAllDeliveriesInvitations();
-
-  ErrorOr<List<NearbyRider>> nearbyRiders(NearbyRider location) => _repo.nearbyRiders(location);
 }

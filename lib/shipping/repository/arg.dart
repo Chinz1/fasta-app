@@ -71,26 +71,26 @@ class CreateShipmentArg {
   }
 
   Future<Map<String, dynamic>> toMap() async {
-    // final Position position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high);
+    final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     // TODO FIX
-    final from = await pickUpAddress.getCoordinateFromAddress();
-    final to = await deliveryPoint.getCoordinateFromAddress();
+    // final from = await deliveryPoint.getCoordinateFromAddress();
+    // final to = await deliveryPoint.getCoordinateFromAddress();
 
-    // final from = Coordinate(
-    //     latitude: position.latitude,
-    //     longitude: position.longitude,
-    //     parentAddress: 'parentAddress');
-    // final to =Coordinate(
-    //     latitude: position.latitude,
-    //     longitude: position.longitude,
-    //     parentAddress: 'parentAddress');
+    final from = Coordinate(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        parentAddress: 'parentAddress');
+    final to =Coordinate(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        parentAddress: 'parentAddress');
 
     return {
       // 'email': email,
       'senderName': senderName,
       // TODO FIX
-      'fromAddress': pickUpAddress,
+      'fromAddress': deliveryPoint,
       'senderPhoneNumber': phoneNumber,
       // 'pickup_time': pickUpTime,
       // 'delivery_priority': 1,
@@ -101,13 +101,13 @@ class CreateShipmentArg {
       'items': itemName,
       // 'qty': qty,
       // 'value': value,
-      'weight': weight + ' kg',
+      'weight': weight,
       // 'description_details': description,
       'imageUrl': image,
       // [fragile, non-fragile, broken, missing, damaged, unavailable, glassy, unspecified]","error":true}})
       'itemState': 'unspecified',
       // TODO VECHICLE TYPE [bike, car, van, bus, truck]
-      'vehicleType': vechicleType,
+      'vehicleType': 'bike',
       'priority': true,
       'fromLatitude': from.latitude,
       'fromLongitude': from.longitude,
@@ -254,7 +254,7 @@ class DeliveryCostArg {
       'fromLongitude': fromLng,
       'toLatitude': toLnt,
       'toLongitude': toLng,
-      'vehicleType': vehicleType,
+      'vehicleType': 'bus',
       'priority': true,
     };
   }
@@ -264,9 +264,4 @@ class DeliveryCostArg {
   //   final fromAddress = await from.getCoordinateFromAddress();
   //       return DeliveryCostArg(fromLat: fromAddress.to, fromLng: fromLng, toLnt: toLnt, toLng: toLng, vehicleType: vehicleType, priority: priority)
   // }
-}
-class LocationPointArg {
-  final String to, from;
-
-  LocationPointArg(this.to, this.from);
 }

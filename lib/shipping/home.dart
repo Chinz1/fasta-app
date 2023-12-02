@@ -4,9 +4,7 @@ import 'package:fasta/global_widgets/app_bars/app_bar_with_Avater.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/button_mixin.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/custom_button.dart';
 import 'package:fasta/global_widgets/text_fields/text_field_with_hint_text.dart';
-import 'package:fasta/profile/application/bloc/profile_bloc.dart';
 import 'package:fasta/profile/home.dart';
-import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/shipping/repository/arg.dart';
 import 'package:fasta/shipping/select_ride.dart';
 import 'package:fasta/shipping/widgets/elevated_container_tickbok.dart';
@@ -25,9 +23,7 @@ class ShippingView extends StatefulWidget {
 
 class _ShippingViewState extends State<ShippingView>
     with RoundedLoadingButtonMixin {
-    int? _selectedIndex;
-
-  
+  int? _selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +31,6 @@ class _ShippingViewState extends State<ShippingView>
       extendBody: true,
       backgroundColor: FastaColors.primary2,
       appBar: AppBarWithAvater(
-        IconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
         onPressed: () => Navigator.pushNamed(context, ProfileView.route),
       ),
       body: SingleChildScrollView(
@@ -46,7 +41,7 @@ class _ShippingViewState extends State<ShippingView>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BlocBuilder<ProfileBloc, ProfileState>(
+            BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 return Text(
                   'Hey ${state.user?.fullName ?? ''}!',
@@ -91,16 +86,8 @@ class _ShippingViewState extends State<ShippingView>
             CustomButton(
               controller: btnController,
               onPressed: () async {
-                if (_selectedIndex == _data.length - 1) {
+                if (_selectedIndex != null) {
                   _showMyDialog(context, _data[_selectedIndex!].name);
-                } else if (_selectedIndex != null &&
-                    _selectedIndex != _data.length - 1) {
-                  Map<String, dynamic> arg = {
-                    'aboutGoods': AboutGoods(_data[_selectedIndex!].name)
-                  };
-
-                  Navigator.pushNamed(context, SelectRide.route,
-                      arguments: arg);
                 }
               },
             ),
@@ -139,9 +126,7 @@ Future<void> _showMyDialog(BuildContext context, String name) async {
               ),
               GestureDetector(
                 onTap: () {
-                  Map<String, dynamic> arg = {
-                    'aboutGoods': AboutGoods(itemController.text)
-                  };
+                  Map<String, dynamic> arg = {'aboutGoods': AboutGoods(name)};
 
                   Navigator.pushReplacementNamed(context, SelectRide.route,
                       arguments: arg);
@@ -186,5 +171,4 @@ List<_ShipmentOption> _data = [
   _ShipmentOption('Accessories & more', false, 'diamond-ring'),
   _ShipmentOption('Gadget', false, 'desktop'),
   _ShipmentOption('Documents', false, 'documents'),
-  _ShipmentOption('Other', false, 'documents'),
 ];

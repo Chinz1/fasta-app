@@ -156,6 +156,19 @@ class _SignUpRiderViewState extends State<SignUpRiderView>
             ],
           ),
           SizedBox(
+            height: 15.h,
+          ),
+          Text('Vechicle Type', style: FastaTextStyle.subtitle2),
+          SizedBox(
+            height: 9.h,
+          ),
+          TextFieldWithSuffixIcon(
+            controller: vehicleTypeController,
+            onPressed: () {
+              selectVehicleTypeDialog(context, vehicleTypeController);
+            },
+          ),
+          SizedBox(
             height: 65.h,
           ),
           BlocListener<AuthBloc, AuthState>(

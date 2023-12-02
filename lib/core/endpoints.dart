@@ -22,20 +22,6 @@ class Endpoints {
   static _Wallet get wallet => _Wallet();
   static _Delivery get delivery => _Delivery();
   static _DriverDelivery get driverDelivery => _DriverDelivery();
-  static _ChatAndCall get chatAndCall => _ChatAndCall();
-  static _Card get card => _Card();
-  static _Notifications get notification => _Notifications();
-}
-
-class _Notifications{
-  String get getAllNotifications => relevant + 'user/notifications?page=1&limit=20'; 
-  String markUserRead(int id) => relevant + 'user/notifications/$id/read';
-  String get unreadCount => relevant + 'user/notifications/count/unread';
-}
-
-class _Card{
-  String get addcard => relevant + 'wallet/payment-card';
-  String get getAllCards => relevant + 'wallet/payment-card';
 }
 
 class _PayStack {
@@ -53,7 +39,6 @@ class _Auth {
   String get forgotPasswordOTP => relevant + 'auth/login/forgot-password/otp';
   String getUserOTP(int userID, int otpID) =>
       relevant + 'auth/otp?userId=$userID&otpId=$otpID';
- String get googleSignIn => '';
 }
 
 class _Shipment {
@@ -146,7 +131,6 @@ class _Delivery {
   String tipDriver(String deliveryId) => relevant + 'delivery/$deliveryId/tip';
   String getADelivery(String deliveryId) => relevant + 'delivery/$deliveryId';
   String get getAllDeliveries => relevant + 'delivery';
-  String get nearbyRiders => relevant + 'delivery/nearby-vehicles';
 }
 
 class _DriverDelivery {
@@ -163,8 +147,4 @@ class _DriverDelivery {
 
   String getADelivery(String deliveryId) =>
       relevant + 'delivery/$deliveryId/as-driver';
-}
-
-class _ChatAndCall {
-  String get getAccessToken => relevant + 'user/sendbird/auth/details';
 }

@@ -5,12 +5,10 @@ import 'package:fasta/api_client/infrastruture/dio_helper.dart';
 import 'package:fasta/auth/bloc/auth_bloc.dart';
 import 'package:fasta/colors/colors.dart';
 import 'package:fasta/core/constants.dart';
-import 'package:fasta/global_widgets/cards/elevated_card_responsive.dart';
 import 'package:fasta/global_widgets/notifications/notify.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/button_mixin.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_back_button.dart';
 import 'package:fasta/global_widgets/rounded_loading_button/custom_button.dart';
-import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/shipping/application/map/shipment_bloc.dart';
 import 'package:fasta/shipping/item_info.dart';
 import 'package:fasta/shipping/repository/arg.dart';
@@ -20,7 +18,6 @@ import 'package:fasta/typography/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 
 import 'package:google_api_headers/google_api_headers.dart';
@@ -29,8 +26,6 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:maps_places_autocomplete/maps_places_autocomplete.dart';
 import 'package:maps_places_autocomplete/model/suggestion.dart';
-
-import '../profile/application/bloc/profile_bloc.dart';
 
 class SenderInfo extends StatefulWidget {
   static const String route = '/SenderInfo';
@@ -51,7 +46,6 @@ class _SenderInfoState extends State<SenderInfo>
   bool switchvaule = true;
   late Map<String, dynamic> arg;
   String? pickUpAddressMap;
-  String? deliveryAddressMap;
 
   @override
   void didChangeDependencies() {
@@ -84,19 +78,12 @@ class _SenderInfoState extends State<SenderInfo>
     );
   }
 
-  Future getCurrentLoation() async {
-    final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-        // pickupAddress.text = position.
-  }
-
   Future<void> _handlePressButton() async {
     // show input autocomplete with selected mode
     // then get the Prediction selected
     Prediction? p = await PlacesAutocomplete.show(
       context: context,
-      apiKey: 'AIzaSyA-lqYHLBnNE3-I2CaCjgTgQE0BqEzSEWM',
+      apiKey: 'AIzaSyBU2vwu9Y9nJJQwg0DMaC5ngb0KnFA4VX8',
       onError: onError,
       mode: Mode.overlay,
       language: "fr",
@@ -119,7 +106,7 @@ class _SenderInfoState extends State<SenderInfo>
     if (p != null) {
       // get detail (lat/lng)
       GoogleMapsPlaces _places = GoogleMapsPlaces(
-        apiKey: 'AIzaSyA-lqYHLBnNE3-I2CaCjgTgQE0BqEzSEWM',
+        apiKey: 'AIzaSyBU2vwu9Y9nJJQwg0DMaC5ngb0KnFA4VX8',
         apiHeaders: await const GoogleApiHeaders().getHeaders(),
       );
       PlacesDetailsResponse detail =
@@ -140,14 +127,13 @@ class _SenderInfoState extends State<SenderInfo>
       backgroundColor: FastaColors.primary2,
       appBar: AppBarWithBackButton(
         onPressed: () => Navigator.pop(context),
-        iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(
           horizontal: 27.w,
         ),
-        child: BlocBuilder<ProfileBloc, ProfileState>(
+        child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,34 +199,14 @@ class _SenderInfoState extends State<SenderInfo>
                               ),
                               onSuggestionClick: (place) {
                                 pickUpAddressMap =
-                                    ' ${place.streetNumber??''} ${place.street??''} ${place.city} ${place.state} ${place.country??''}';
+                                    '${place.streetNumber} ${place.street}, ${place.city} ${place.state}';
                               },
-                              componentCountry:'NG',
-                              mapsApiKey: 'AIzaSyA-lqYHLBnNE3-I2CaCjgTgQE0BqEzSEWM',
+                              mapsApiKey: Constants.googleMapApi,
                               buildItem: (Suggestion suggestion, int index) {
-                                // if (index ==0 ){
-                                //   return ElevatedCardResponsive(
-                                //   width: 1.screenWidth,
-                                //   responsiveHeight: true,
-                                //   isSelected: false,
-                                //     children: [Expanded(child: Text('suggestion.description'))]);
-                                // }
-                                return ElevatedCardResponsive(
-                                  width: 1.screenWidth,
-                                  responsiveHeight: true,
-                                  isSelected: false,
-                                    children: [Expanded(child: Text(suggestion.description))]);
+                                return SizedBox(
+                                    child: Text(suggestion.description));
                               }),
                         ),
-                        // Padding(
-                        //   padding: EdgeInsets.symmetric(horizontal: 23.w),
-                        //   child: TextFormField(
-                        //       controller: pickupAddress..text = '${state.user?.city??''}, ${state.user?.state??''}',
-                        //       decoration: InputDecoration(
-                        //         border: OutlineInputBorder(
-                        //             borderRadius: BorderRadius.circular(9.h)),
-                        //       )),
-                        // ),
                         SizedBox(
                           height: 16.h,
                         ),
@@ -262,7 +228,7 @@ class _SenderInfoState extends State<SenderInfo>
                           padding: EdgeInsets.symmetric(horizontal: 23.w),
                           child: TextFormField(
                               controller: sendersName
-                                ..text = state.user?.fullName ?? '',
+                                ..text = state.user?.fullName??'',
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(9.h)),
@@ -290,7 +256,7 @@ class _SenderInfoState extends State<SenderInfo>
                               Expanded(
                                 child: TextFormField(
                                     controller: sendersPhoneNumber
-                                      ..text = state.user?.phoneNumber ?? '',
+                                      ..text = state.user?.phoneNumber??'',
                                     keyboardType:
                                         const TextInputType.numberWithOptions(),
                                     decoration: InputDecoration(
@@ -366,12 +332,12 @@ class _SenderInfoState extends State<SenderInfo>
                                         value: 'Now',
                                       ),
                                       DropdownMenuItem(
-                                        child: Text('30'),
-                                        value: '30',
+                                        child: Text('30 Minutes'),
+                                        value: '30 Minutes',
                                       ),
-                                      DropdownMenuItem(child: Text('1')),
-                                      DropdownMenuItem(child: Text('2')),
-                                      DropdownMenuItem(child: Text('3')),
+                                      DropdownMenuItem(child: Text('1 Hour')),
+                                      DropdownMenuItem(child: Text('2 Hour')),
+                                      DropdownMenuItem(child: Text('3 Hour')),
                                     ],
                                     onChanged: (_) {}),
                               )
@@ -417,24 +383,12 @@ class _SenderInfoState extends State<SenderInfo>
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 23.w),
-                          child: MapsPlacesAutocomplete(
-                              inputDecoration: InputDecoration(
+                          child: TextFormField(
+                              controller: deliveryPoint,
+                              decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(9.h)),
-                              ),
-                              onSuggestionClick: (place) {
-                                deliveryAddressMap =
-                                    ' ${place.streetNumber??''} ${place.street??''} ${place.city} ${place.state} ${place.country??''}';
-                              },
-                              componentCountry: 'NG',
-                              mapsApiKey: 'AIzaSyA-lqYHLBnNE3-I2CaCjgTgQE0BqEzSEWM',
-                              buildItem: (Suggestion suggestion, int index) {
-                                return ElevatedCardResponsive(
-                                  width: 1.screenWidth,
-                                  responsiveHeight: true,
-                                  isSelected: false,
-                                    children: [Expanded(child: Text(suggestion.description))]);
-                              }),
+                              )),
                         ),
                         SizedBox(
                           height: 16.h,
@@ -532,26 +486,25 @@ class _SenderInfoState extends State<SenderInfo>
                   onPressed: () async {
                     if (sendersName.text.isNotEmpty &&
                         sendersPhoneNumber.text.isNotEmpty &&
-                        (deliveryAddressMap?.isNotEmpty??false )&&
+                        deliveryPoint.text.isNotEmpty &&
                         receiversName.text.isNotEmpty &&
                         recieversPhoneNumber.text.isNotEmpty) {
                       arg.putIfAbsent(
                           'SendersInfoArg',
                           () => SendersInfoArg(
-                              pickupAddress: pickUpAddressMap!,
+                              pickupAddress: pickupAddress.text,
                               sendersName: sendersName.text,
                               sendersPhonNumber: sendersPhoneNumber.text,
                               pickUpTime: 'now',
                               priority: '1',
-                              deliveryPoint: deliveryAddressMap!,
+                              deliveryPoint: deliveryPoint.text,
                               receiversName: receiversName.text,
                               receiversPhoneNumber: recieversPhoneNumber.text));
-                      if (!switchvaule) {
+                      if (switchvaule) {
+                        _showMyDialog(context, arg);
+                      } else {
                         Navigator.pushNamed(context, ItemInfo.route,
                             arguments: arg);
-                        
-                      } else {
-                        _showMyDialog(context, arg);
                       }
                     } else {
                       Notify.error(context, 'Missing Reqired Field');

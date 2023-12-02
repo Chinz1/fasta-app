@@ -1,7 +1,5 @@
 import 'package:fasta/colors/colors.dart';
-import 'package:fasta/core/app_state.dart';
 import 'package:fasta/shipping/application/bloc/shipment_handler_bloc.dart';
-import 'package:fasta/shipping/domain/entity/delivery_model.dart';
 import 'package:fasta/shipping/map_view.dart';
 import 'package:fasta/shipping/order_receipt.dart';
 import 'package:fasta/shipping/trip_complete.dart';
@@ -26,7 +24,6 @@ class _ItemTrackerViewState extends State<ItemTrackerView> {
       DraggableScrollableController();
 
   double value = 0;
-
   @override
   Widget build(BuildContext context) {
     return MapView(
@@ -52,122 +49,106 @@ class _ItemTrackerViewState extends State<ItemTrackerView> {
                       child: ListView(
                         controller: scrollController,
                         children: [
-                          BlocConsumer<ShipmentHandlerBloc,
-                              ShipmentHandlerState>(
-                            listener: (context, state) {
-                              if (state.delivery?.deliverySummary.status
-                                      .trim()
-                                      .toUpperCase() ==
-                                  'driver-completed'.toUpperCase()) {
-                                showMyDialog(
-                                    context, state.delivery!.deliverySummary);
-                              }
-                            },
-                            builder: (context, state) {
-                              return Column(
+                          Column(
+                            children: [
+                              Container(
+                                height: 6.h,
+                                width: 100.w,
+                                decoration: BoxDecoration(
+                                  color: FastaColors.grey5,
+                                  borderRadius: BorderRadius.circular(100.h),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20.h,
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Your item is Enroute',
+                                  style: FastaTextStyle.subtitle1,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 12.h,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100.h),
+                                  color: FastaColors.grey5,
+                                ),
+                                child: LinearProgressIndicator(
+                                  color: FastaColors.grey7,
+                                  // valueColor: ,
+                                  backgroundColor: FastaColors.transparent,
+                                  minHeight: 8.h,
+                                  value: 0.5,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 9.h,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    height: 6.h,
-                                    width: 100.w,
-                                    decoration: BoxDecoration(
-                                      color: FastaColors.grey5,
-                                      borderRadius:
-                                          BorderRadius.circular(100.h),
-                                    ),
+                                  const TrackerIcon(
+                                      icon: Icon(Icons.place),
+                                      name: 'Pickup Point'),
+                                  AnimatedContainer(
+                                    duration: const Duration(seconds: 1),
+                                    // padding: EdgeInsets.only(
+                                    //     left: value * (1.screenWidth - 80.w)),
+                                    child: const TrackerIcon(
+                                        icon: Icon(Icons.bike_scooter),
+                                        name: 'Rider'),
                                   ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Your item is Enroute',
-                                      style: FastaTextStyle.subtitle1,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 12.h,
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(100.h),
-                                      color: FastaColors.grey5,
-                                    ),
-                                    child: LinearProgressIndicator(
-                                      color: FastaColors.grey7,
-                                      // valueColor: ,
-                                      backgroundColor: FastaColors.transparent,
-                                      minHeight: 8.h,
-                                      value: 0.5,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 9.h,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const TrackerIcon(
-                                          icon: Icon(Icons.place),
-                                          name: 'Pickup Point'),
-                                      AnimatedContainer(
-                                        duration: const Duration(seconds: 1),
-                                        // padding: EdgeInsets.only(
-                                        //     left: value * (1.screenWidth - 80.w)),
-                                        child: const TrackerIcon(
-                                            icon: Icon(Icons.bike_scooter),
-                                            name: 'Rider'),
-                                      ),
-                                      TrackerIcon(
-                                          icon: CircleAvatar(
-                                              backgroundColor:
-                                                  FastaColors.transparent,
-                                              radius: 11.h,
-                                              backgroundImage:
-                                                  Image.asset('assets/2.png')
-                                                      .image),
-                                          name: 'You'),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 34.h,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      controller.animateTo(0,
-                                          duration: const Duration(seconds: 1),
-                                          curve: const ElasticInCurve());
-                                      // showMyDialog(context);
-                                    },
-                                    child: Container(
-                                      width: 48.h,
-                                      height: 48.h,
-                                      child: Image.asset('assets/gift-box.png'),
-                                      decoration: const BoxDecoration(
-                                          color: FastaColors.lightBlue,
-                                          shape: BoxShape.circle),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  Text(
-                                    'NGN ${state.delivery!.deliverySummary.cost}',
-                                    style: FastaTextStyle.headline1,
-                                  ),
-                                  Text(
-                                    '${state.delivery!.deliverySummary.duration} Mins to arrival, ${state.delivery!.deliverySummary.distance} km left.',
-                                    style: FastaTextStyle.subtitle1
-                                        .copyWith(color: FastaColors.grey7),
-                                  ),
-                                  SizedBox(
-                                    height: 54.h,
-                                  ),
+                                  TrackerIcon(
+                                      icon: CircleAvatar(
+                                          backgroundColor:
+                                              FastaColors.transparent,
+                                          radius: 11.h,
+                                          backgroundImage:
+                                              Image.asset('assets/2.png')
+                                                  .image),
+                                      name: 'You'),
                                 ],
-                              );
-                            },
+                              ),
+                              SizedBox(
+                                height: 34.h,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  controller.animateTo(0,
+                                      duration: const Duration(seconds: 1),
+                                      curve: const ElasticInCurve());
+                                  _showMyDialog(context);
+                                },
+                                child: Container(
+                                  width: 48.h,
+                                  height: 48.h,
+                                  child: Image.asset('assets/gift-box.png'),
+                                  decoration: const BoxDecoration(
+                                      color: FastaColors.lightBlue,
+                                      shape: BoxShape.circle),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20.h,
+                              ),
+                              Text(
+                                'NGN 500.00 - NGN 900.00',
+                                style: FastaTextStyle.headline1,
+                              ),
+                              Text(
+                                '35 Mins to arrival, 1.5km left.',
+                                style: FastaTextStyle.subtitle1
+                                    .copyWith(color: FastaColors.grey7),
+                              ),
+                              SizedBox(
+                                height: 54.h,
+                              ),
+                            ],
                           )
                         ],
                       ));
@@ -199,8 +180,7 @@ class TrackerIcon extends StatelessWidget {
   }
 }
 
-Future<void> showMyDialog(
-    BuildContext context, DeliverySummary delivery) async {
+Future<void> _showMyDialog(BuildContext context) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
@@ -232,8 +212,8 @@ Future<void> showMyDialog(
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        // ShipmentHandlerEvent.updateTripStatus(
-                        //     id: '1', status: 'Failed');
+                        ShipmentHandlerEvent.updateTripStatus(
+                            id: '1', status: 'Failed');
                         Navigator.pop(context);
                         _showReportIssueDialog(context);
                       },
@@ -254,35 +234,25 @@ Future<void> showMyDialog(
                     width: 20.w,
                   ),
                   Expanded(
-                    child: BlocListener<ShipmentHandlerBloc, ShipmentHandlerState>(
-                      listener: (context, state) {
-                        // if (state.status == AppState.success){
-                          Navigator.popUntil(context, (route)=> route.isFirst);
-                          Navigator.pushNamed(context,
-                              TripCompleted.route,
-                              arguments: delivery);
-                        // }
-                      }, 
-                      child: GestureDetector(
-                        onTap: () {
-                          
-                          context.read<ShipmentHandlerBloc>().add(
-                              ShipmentHandlerEvent.acceptCompletedDelivery(
-                                  delivery.id));
-                          // Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 55.h,
-                          width: 92.w,
-                          decoration: BoxDecoration(
-                              color: FastaColors.primary,
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(13.h)),
-                          child: Center(
-                            child: Text('Yes',
-                                style: FastaTextStyle.hardLabel
-                                    .copyWith(color: FastaColors.primary2)),
-                          ),
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<ShipmentHandlerBloc>().add(
+                            ShipmentHandlerEvent.updateTripStatus(
+                                id: '1', status: 'Completed'));
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            TripCompleted.route, (route) => route.isFirst);
+                      },
+                      child: Container(
+                        height: 55.h,
+                        width: 92.w,
+                        decoration: BoxDecoration(
+                            color: FastaColors.primary,
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(13.h)),
+                        child: Center(
+                          child: Text('Yes',
+                              style: FastaTextStyle.hardLabel
+                                  .copyWith(color: FastaColors.primary2)),
                         ),
                       ),
                     ),

@@ -57,15 +57,13 @@ class _ChatViewState extends State<ChatView> {
           onTap: () {
             Navigator.pushReplacementNamed(context, RiderProfile.route);
           },
-          child: Row( 
+          child: Row(
             children: [
               CircleAvatar(
                   radius: 20.h,
-                   backgroundColor: FastaColors.lightOrange,
-                                backgroundImage:
-                                    (arg!.avatarUrl?.isEmpty??false)?
-                                            Image.asset('assets/2.png')
-                                                .image: Image.network(arg!.avatarUrl!).image,),
+                  backgroundImage: (arg?.avatarUrl == null)
+                      ? Image.asset('assets/young.png').image
+                      : Image.network(arg!.avatarUrl!).image),
               SizedBox(
                 width: 10.w,
               ),

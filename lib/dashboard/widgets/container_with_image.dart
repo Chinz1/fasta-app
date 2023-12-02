@@ -17,7 +17,7 @@ class DashboardOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 140.h,
+      height: 137.h,
       width: 154.w,
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
       decoration: BoxDecoration(

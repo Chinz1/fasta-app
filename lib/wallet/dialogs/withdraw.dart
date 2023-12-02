@@ -1,7 +1,6 @@
 import 'package:fasta/colors/colors.dart';
 import 'package:fasta/core/app_state.dart';
 import 'package:fasta/global_widgets/notifications/notify.dart';
-import 'package:fasta/global_widgets/rounded_loading_button/custom_button.dart';
 import 'package:fasta/global_widgets/text_fields/text_field_with_hint_text.dart';
 import 'package:fasta/theming/size_config.dart';
 import 'package:fasta/typography/text_styles.dart';
@@ -9,12 +8,10 @@ import 'package:fasta/wallet/bloc/paystack_bloc.dart';
 import 'package:fasta/wallet/dialogs/withdrawal_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 Future<void> withdrawDialog(
     BuildContext context, TextEditingController controller) async {
   bool buttonClicked = false;
-  final btnController = RoundedLoadingButtonController();
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
@@ -57,17 +54,10 @@ Future<void> withdrawDialog(
                   BlocConsumer<PaystackBloc, PaystackState>(
                     listenWhen: (previous, current) => buttonClicked,
                     listener: (context, state) {
-                      if (state.appState == AppState.loading) {
-                        btnController.start();
-                      }
                       if (state.appState == AppState.success) {
-                        btnController.success();
-                        btnController.reset();
                         Navigator.pop(context);
                         withdrawOptionsDialog(context);
                       } else if (state.appState == AppState.failed) {
-                        btnController.error();
-                        btnController.reset();
                         Notify.error(
                             context,
                             state.error?.errorMessage ??
@@ -77,30 +67,24 @@ Future<void> withdrawDialog(
                     builder: (context, state) {
                       return GestureDetector(
                         onTap: () {
+                          context.read<PaystackBloc>().add(
+                              PaystackEvent.initiateWithdrawal(
+                                  controller.text));
+                          buttonClicked = true;
                         },
-                        child: CustomButton.named(
-                            controller: btnController,
-                            name: 'Withdraw',
-                             width: 148.w,
-                            onPressed: () {
-                              context.read<PaystackBloc>().add(
-                                  PaystackEvent.initiateWithdrawal(
-                                      controller.text));
-                              buttonClicked = true;
-                            }),
-                        // child: Container(
-                        //   height: 45.h,
-                        //   width: 148.w,
-                        //   decoration: BoxDecoration(
-                        //       color: FastaColors.primary,
-                        //       border: Border.all(),
-                        //       borderRadius: BorderRadius.circular(13.h)),
-                        //   child: Center(
-                        //     child: Text('Withdraw',
-                        //         style: FastaTextStyle.hardLabel
-                        //             .copyWith(color: FastaColors.primary2)),
-                        //   ),
-                        // ),
+                        child: Container(
+                          height: 45.h,
+                          width: 148.w,
+                          decoration: BoxDecoration(
+                              color: FastaColors.primary,
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(13.h)),
+                          child: Center(
+                            child: Text('Withdraw',
+                                style: FastaTextStyle.hardLabel
+                                    .copyWith(color: FastaColors.primary2)),
+                          ),
+                        ),
                       );
                     },
                   )

@@ -54,11 +54,7 @@ class DioClient extends ApiClient<Response> {
     return throwIfNot(
         response: response,
         condition: (response.statusCode.toString().trim().startsWith('2')),
-        error: (response is DioError)
-            ? AppException(
-                code: response.statusCode,
-                errMessage: response.data['meta']['message'])
-            : AppException(errMessage: 'Something went Wrong', code: 0));
+        error: AppException(
+            code: response.statusCode, errMessage: response.statusMessage));
   }
 }
-

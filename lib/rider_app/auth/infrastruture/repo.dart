@@ -24,8 +24,6 @@ class AuthRiderImpl implements AuthRider {
       await updateDriverLocation();
       await setAsActive();
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -52,8 +50,6 @@ class AuthRiderImpl implements AuthRider {
       final res = await _client.post(Endpoints.auth.register, body: body);
       await setAsActive();
       return Right(OTPModel.fromJson(res.data));
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -65,8 +61,6 @@ class AuthRiderImpl implements AuthRider {
       await _client.post(Endpoints.driverAuth.registerAsDriver);
       await updateDriverLocation();
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -78,8 +72,6 @@ class AuthRiderImpl implements AuthRider {
       await _client.put(Endpoints.driverAuth.updateDriverVehicle,
           body: arg.toMap());
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -100,8 +92,6 @@ class AuthRiderImpl implements AuthRider {
       };
       await _client.put(Endpoints.driverAuth.updateLicenceInfo, body: body);
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -113,8 +103,6 @@ class AuthRiderImpl implements AuthRider {
       await _client.post(Endpoints.driverAuth.uploadVehicleImages,
           body: {'image': image});
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -131,8 +119,6 @@ class AuthRiderImpl implements AuthRider {
       };
       await _client.put(Endpoints.driverAuth.updateDriverLocation, body: body);
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -143,8 +129,6 @@ class AuthRiderImpl implements AuthRider {
     try {
       _client.put(Endpoints.driverAuth.setAsActive);
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -155,8 +139,6 @@ class AuthRiderImpl implements AuthRider {
     try {
       _client.put(Endpoints.driverAuth.setAsInActive);
       return const Right(unit);
-    } on DioError catch (e) {
-      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }

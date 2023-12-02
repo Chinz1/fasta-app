@@ -124,10 +124,8 @@ class _RiderScanState extends State<RiderScan> {
                                   children: [
                                     CircleAvatar(
                                       radius: 34.h,
-                                      backgroundColor: FastaColors.lightOrange,
                                       backgroundImage:
-                                      
-                                          Image.asset('assets/2.png').image,
+                                          Image.asset('assets/young.png').image,
                                     ),
                                     SizedBox(
                                       width: 46.w,

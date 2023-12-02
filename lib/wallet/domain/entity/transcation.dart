@@ -12,10 +12,3 @@ class Transaction {
     required this.userId,
   });
 }
-
-class AllTrasaction{
-  final List<Transaction> transactions;
-  final double lastPage;
-
-  AllTrasaction(this.transactions, this.lastPage);
-}
