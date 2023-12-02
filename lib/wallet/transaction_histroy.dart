@@ -1,15 +1,25 @@
 import 'dart:developer';
 
 import 'package:fasta/colors/colors.dart';
+import 'package:fasta/core/app_state.dart';
+import 'package:fasta/extension/string.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_back_button.dart';
+import 'package:fasta/global_widgets/infinite_scroll_view.dart';
+import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/theming/size_config.dart';
 import 'package:fasta/typography/text_styles.dart';
 import 'package:fasta/wallet/bloc/paystack_bloc.dart';
+import 'package:fasta/wallet/domain/entity/transcation.dart';
 import 'package:fasta/wallet/repository/args.dart';
+import 'package:fasta/wallet/widgets/custom_drop_down_button.dart';
+import 'package:fasta/wallet/widgets/first_page_error_indicator.dart';
+import 'package:fasta/wallet/widgets/new_page_error_widget.dart';
 import 'package:fasta/wallet/widgets/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+enum TransactionStatus {pending, success, failed, cancelled, reverted,}
 class TransactionHistory extends StatefulWidget {
   static const String route = '/TransactionHistory';
   const TransactionHistory({Key? key}) : super(key: key);
@@ -17,240 +27,223 @@ class TransactionHistory extends StatefulWidget {
   @override
   State<TransactionHistory> createState() => _TransactionHistoryState();
 }
+final DateTime today  = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+1);
 
 class _TransactionHistoryState extends State<TransactionHistory> {
   int _selectedIndex = 0;
-  String startDate = '';
-  String endDate = '';
+  int nextPageKey = 1;
+  String status = '';
+  final PagingController<int, Transaction> _pageController = PagingController(
+    firstPageKey: 1,
+  );
+  TextEditingController startDate = TextEditingController(text: '2022-05-25');
+
+
+  TextEditingController endDate = TextEditingController(
+      text:
+          '${today.year}-0${today.month}-0${today.day}');
 
   void reload(String date) {
-    startDate = date;
+    startDate.text = date;
     setState(() {});
+    log('called');
   }
 
   void reloadEndDate(String date) {
-    endDate = date;
+    endDate.text = date;
+    log('called');
     setState(() {});
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBarWithBackButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: FastaColors.primary2,
-        body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 27.w),
-            physics: const BouncingScrollPhysics(),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                'Transaction History',
-                style: FastaTextStyle.headline6,
-              ),
-              SizedBox(height: 28.h),
-              Row(
-                  children: List.generate(3, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    _selectedIndex = index;
-                    setState(() {});
-                  },
-                  child: Container(
-                      margin: EdgeInsets.only(right: 24.w),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7.h),
-                          border: Border.all(),
-                          color: (_selectedIndex == index)
-                              ? FastaColors.primary
-                              : FastaColors.primary2),
-                      child: Center(
-                          child: Text(
-                        _type[index],
-                        style: FastaTextStyle.hardLabel2.copyWith(
-                            color: (_selectedIndex == index)
-                                ? FastaColors.primary2
-                                : FastaColors.primary),
-                      ))),
-                );
-              })),
-              SizedBox(height: 28.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomDropDownButton(time: 'From', reload: reload),
-                  SizedBox(
-                    width: 12.w,
-                  ),
-                  CustomDropDownButton(time: 'To', reload: reloadEndDate),
-                  const Expanded(
-                    child: SizedBox(),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      context.read<PaystackBloc>().add(
-                          PaystackEvent.allTransactions(TransactionArg(
-                              endDate: endDate,
-                              page: '1',
-                              limit: '10',
-                              order: 'desc',
-                              status: '',
-                              type: '',
-                              startDate: startDate)));
-                      // reload(date)
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(top: 12.h),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.h, horizontal: 10.w),
-                      decoration: BoxDecoration(
-                          color: FastaColors.primary,
-                          borderRadius: BorderRadius.circular(10.h)),
-                      child: Center(
-                          child: Text(
-                        'Search',
-                        style: FastaTextStyle.subtitleHard
-                            .copyWith(color: FastaColors.primary2),
-                      )),
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 38.h),
-              BlocBuilder<PaystackBloc, PaystackState>(
-                builder: (context, state) {
-                  if (state.allTransaction.isEmpty)
-                    {return const Center(child: Text('No Result'));}
-                  return Column(
-                      children:
-                          List.generate(state.allTransaction.length, (index) {
-                    return NotificationMessage(
-                      radius: 15.h,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15.w,
-                      ),
-                      icon: Container(
-                        height: 25.h,
-                        width: 27.w,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.h),
-                          color: FastaColors.lightBlue,
-                        ),
-                        child: Center(
-                            child: Image.asset(
-                          'assets/2.0x/credit-card.png',
-                          height: 16.h,
-                          width: 16.h,
-                        )),
-                      ),
-                      content: Text(
-                        'Paid NGN ${state.allTransaction[index].amount}',
-                        style:
-                            FastaTextStyle.hardLabel2.copyWith(fontSize: 12.f),
-                      ),
-                      timeRecieved: Text(state.allTransaction[index].createdAt,
-                          style: FastaTextStyle.subtitle3
-                              .copyWith(color: FastaColors.grey8)),
-                    );
-                  }));
-                },
-              )
-            ])));
+  void initState() {
+    super.initState();
+
+    _pageController.addPageRequestListener((pageKey) {
+      pageListener();
+    });
   }
-}
 
-class CustomDropDownButton extends StatefulWidget {
-  final String time;
-  final void Function(String date) reload;
-
-  const CustomDropDownButton(
-      {Key? key, required this.time, required this.reload})
-      : super(key: key);
+  void pageListener() {
+    context.read<PaystackBloc>().add(PaystackEvent.allTransactions(
+          TransactionArg(
+              endDate: endDate.text.isEmpty ? '' : endDate.text,
+              page: nextPageKey.toString(),
+              limit: '10',
+              order: 'desc',
+              status: status,
+              type: '',
+              startDate: startDate.text.isEmpty ? '' : startDate.text),
+        ));
+  }
 
   @override
-  State<CustomDropDownButton> createState() => _CustomDropDownButtonState();
-}
-
-class _CustomDropDownButtonState extends State<CustomDropDownButton> {
-  final TextEditingController controller = TextEditingController();
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(widget.time, style: FastaTextStyle.subtitle3),
-        GestureDetector(
-          onTap: () async {
-            String? date = await expiryDateDialog(
-                context: context, controller: controller);
-            widget.reload(date ?? '');
-          },
-          child: Container(
-            color: FastaColors.grey10,
-            width: 102.w,
-            child: SizedBox(
-              width: 80.w,
-              height: 32.h,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Icon(
-                    Icons.calendar_month,
-                    size: 10.h,
-                  ),
-                  Text(
-                    controller.text,
-                    style: FastaTextStyle.subtitleHard,
-                  ),
-                ],
-              ),
-            ),
+    return RefreshIndicator(
+      onRefresh: () async {
+         nextPageKey = 1;
+        _pageController.itemList = null;
+       
+        // setState(() {
+          
+        // });
+        // context.read<PaystackBloc>().add(PaystackEvent.allTransactions(
+        //       TransactionArg(
+        //           endDate: '',
+        //           page: '1',
+        //           limit: '10',
+        //           order: 'desc',
+        //           status: '',
+        //           type: '',
+        //           startDate: ''),
+        //     ));
+        await Future.delayed(const Duration(seconds: 3));
+      },
+      child: Scaffold(
+          appBar: AppBarWithBackButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
           ),
-        )
-      ],
+          backgroundColor: FastaColors.primary2,
+          body: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 27.w),
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Transaction History',
+                      style: FastaTextStyle.headline6,
+                    ),
+                    SizedBox(height: 28.h),
+                    Row(
+                        children: List.generate(_type.length, (index) {
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _selectedIndex = index;
+                            
+                            nextPageKey = 1;
+                            status= _type[index].toLowerCase() == 'all'?'':_type[index].toLowerCase();  
+                            setState(() {});
+                              _pageController.itemList = null;
+                            
+                            
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(right: 8.w),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6.w, vertical: 6.h),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(7.h),
+                                  border: Border.all(),
+                                  color: (_selectedIndex == index)
+                                      ? FastaColors.primary
+                                      : FastaColors.primary2),
+                              child: Center(
+                                  child: Text(
+                                _type[index],
+                                style: FastaTextStyle.hardLabel2.copyWith(
+                                    color: (_selectedIndex == index)
+                                        ? FastaColors.primary2
+                                        : FastaColors.primary),
+                              ))),
+                        ),
+                      );
+                    })),
+                    SizedBox(height: 28.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CustomDropDownButton(
+                          time: 'From',
+                          reload: reload,
+                          controller: startDate,
+                        ),
+                        SizedBox(
+                          width: 12.w,
+                        ),
+                        CustomDropDownButton(
+                          time: 'To',
+                          reload: reloadEndDate,
+                          controller: endDate,
+                        ),
+                        const Expanded(
+                          child: SizedBox(),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                             nextPageKey = 1;
+                             _selectedIndex = 0;
+                             status='';
+        _pageController.itemList = null;
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: 12.h),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10.h, horizontal: 10.w),
+                            decoration: BoxDecoration(
+                                color: FastaColors.primary,
+                                borderRadius: BorderRadius.circular(10.h)),
+                            child: Center(
+                                child: Text(
+                              'Search',
+                              style: FastaTextStyle.subtitleHard
+                                  .copyWith(color: FastaColors.primary2),
+                            )),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 38.h),
+                    BlocListener<PaystackBloc, PaystackState>(
+                      listener: (context, state) {
+                        if (state.appState == AppState.success) {
+                          determineAppend(state);
+                        } else if (state.appState == AppState.failed) {
+                          _pageController.error = state.error!.errorMessage;
+                        } else if (state.appState == AppState.loading) {}
+                      },
+                      child: BlocBuilder<PaystackBloc, PaystackState>(
+                          builder: (context, state) {
+                        if (state.allTransaction?.transactions.isEmpty ??
+                            true) {
+                          return const Center(child: Text('No Result'));
+                        } else if (state.appState == AppState.loading &&
+                            nextPageKey == 1) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
+                        return InfinityScrollWidget(pageController: _pageController, errorMessage: state.error?.errorMessage??'Something Went Wrong.',);
+                      }),
+                    )
+                  ]))),
     );
   }
+
+  void determineAppend(PaystackState state) {
+    if ((state.allTransaction?.lastPage ?? 0) > nextPageKey) {
+      log('this');
+      nextPageKey = nextPageKey + 1;
+      // _pageController.nextPageKey = _pageController.nextPageKey??0+ 1;
+      _pageController.appendPage(
+          state.allTransaction!.transactions, nextPageKey);
+    } else {
+      log('that');
+      _pageController.appendLastPage(state.allTransaction!.transactions);
+    }
+  }
 }
 
-const List<String> _type = ['All', 'Wallet', 'Card'];
-Future<String?> expiryDateDialog(
-    {required BuildContext context,
-    required TextEditingController controller}) async {
-  return showDialog<String>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(31.h)),
-        content: StatefulBuilder(builder: (context, setState) {
-          return SingleChildScrollView(
-              child: SizedBox(
-            height: 243.h,
-            width: 1.screenWidth,
-            child: CalendarDatePicker(
-              initialDate: DateTime.now(),
-              firstDate: DateTime(DateTime.now().year - 10),
-              lastDate: DateTime(DateTime.now().year + 10),
-              onDateChanged: (dateTime) {
-                var month =
-                    dateTime.month <= 9 ? '0${dateTime.month}' : dateTime.month;
-                var day = dateTime.day <= 9 ? '0${dateTime.day}' : dateTime.day;
-                controller.text = '${dateTime.year}-$month-$day';
+const List<String> _type = ['All', 'Success', 'Pending'];
 
-                Navigator.pop(context, controller.text);
-              },
-            ),
-          ));
-        }),
-      );
-    },
-  );
-}
+/// Basic layout for indicating that an exception occurred.

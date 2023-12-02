@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:fasta/api_client/domain.dart';
 import 'package:fasta/core/endpoints.dart';
 import 'package:fasta/errrors/app_error.dart';
+import 'package:fasta/errrors/app_exceptions.dart';
 import 'package:fasta/typedef.dart/typedefs.dart';
 import 'package:fasta/wallet/domain/entity/paystack.dart';
 import 'package:dartz/dartz.dart';
@@ -24,6 +26,8 @@ class WalletDataImpl implements WalletData {
       await _client.post(Endpoints.wallet.verifyPaystackLink,
           body: {"reference": reference});
       return const Right(unit);
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -35,23 +39,26 @@ class WalletDataImpl implements WalletData {
       final res = await _client
           .post(Endpoints.wallet.getDepositLink, body: {'amount': amount});
       return Right(PayStackModel.fromJson(res.data));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
-  }
+  }  
 
   @override
-  ErrorOr<List<Transaction>> allTransactions(TransactionArg arg) async {
+  ErrorOr<AllTrasaction> allTransactions(TransactionArg arg) async {
     try {
       log(Endpoints.wallet.allTransactions(arg));
-      final rs = (Endpoints.wallet.allTransactions(arg));
-      log(rs);
-
       final res = await _client.get(Endpoints.wallet.allTransactions(arg));
-      return Right((res.data['data'] as List)
+      final int lastPage = res.data['pagination']['totalPages'];
+      final allTransactions = (res.data['data'] as List)
           .map((e) => TransactionModel.fromMap(e))
-          .toList());
-    } catch (e) {
+          .toList();
+      return Right(AllTrasaction(allTransactions, lastPage.toDouble()));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
+    }catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -62,31 +69,42 @@ class WalletDataImpl implements WalletData {
       final res = await _client.get(Endpoints.wallet.userBalance);
       log(res.toString());
       return Right(TransactionModel.fromMap(res.data['data']));
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
   }
 
   @override
-  ErrorOr<List<Transaction>> getAllEarnings(TransactionArg arg) async {
+  ErrorOr<AllTrasaction> getAllEarnings(TransactionArg arg) async {
     try {
       final res = await _client.get(Endpoints.wallet.getAllEarnings(arg));
-      return Right((res.data['data'] as List)
+      final double lastPage = res.data['pagination']['totalPages'];
+      final allTransactions = (res.data['data'] as List)
           .map((e) => TransactionModel.fromMap(e))
-          .toList());
+          .toList();
+      return Right(AllTrasaction(allTransactions, lastPage));
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
   }
 
   @override
-  ErrorOr<List<Transaction>> getDepositTransaction(TransactionArg arg) async {
+  ErrorOr<AllTrasaction> getDepositTransaction(TransactionArg arg) async {
     try {
       final res =
           await _client.get(Endpoints.wallet.getDepositTransactions(arg));
-      return Right((res.data['data'] as List)
+      
+      final double lastPage = res.data['pagination']['totalPages'];
+      final allTransactions = (res.data['data'] as List)
           .map((e) => TransactionModel.fromMap(e))
-          .toList());
+          .toList();
+      return Right(AllTrasaction(allTransactions, lastPage));
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -97,19 +115,27 @@ class WalletDataImpl implements WalletData {
     try {
       final res = await _client.get(Endpoints.wallet.getTotalEarnings);
       return Right(res.data['data']['total']);
-    } catch (e) {
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
+    }catch (e) {
       return Left(AppError(e.toString()));
     }
   }
 
   @override
-  ErrorOr<List<Transaction>> getWithdrawTransaction(TransactionArg arg) async {
+  ErrorOr<AllTrasaction> getWithdrawTransaction(TransactionArg arg) async {
     try {
       final res =
           await _client.get(Endpoints.wallet.getWithdrawalTransactions(arg));
-      return Right((res.data['data'] as List)
+      
+      
+      final double lastPage = res.data['pagination']['totalPages'];
+      final allTransactions = (res.data['data'] as List)
           .map((e) => TransactionModel.fromMap(e))
-          .toList());
+          .toList();
+      return Right(AllTrasaction(allTransactions, lastPage));
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -121,6 +147,8 @@ class WalletDataImpl implements WalletData {
       final res =
           await _client.get(Endpoints.wallet.getATransaction(transactionId));
       return Right(TransactionModel.fromMap(res.data));
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -132,6 +160,8 @@ class WalletDataImpl implements WalletData {
       log(arg.toMap().toString());
       await _client.post(Endpoints.wallet.getWithdrawalOtp, body: arg.toMap());
       return const Right(unit);
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -144,6 +174,8 @@ class WalletDataImpl implements WalletData {
       log(res.data['data'].toString());
       return Right(
           (res.data['data'] as List).map((e) => BankInfo.fromMap(e)).toList());
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -155,6 +187,8 @@ class WalletDataImpl implements WalletData {
       final res = await _client.post(Endpoints.wallet.initialWithdrawal);
       log(res.data['data']['otpId'].toString());
       return Right(res.data['data']['otpId'].toString());
+    }on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }
@@ -168,6 +202,8 @@ class WalletDataImpl implements WalletData {
       final res =
           await _client.post(Endpoints.wallet.resolveAccountNumber, body: body);
       return Right(AccountInfo.fromMap(res.data['data']));
+    } on DioError catch (e) {
+      return Left(e.fromDioError);
     } catch (e) {
       return Left(AppError(e.toString()));
     }

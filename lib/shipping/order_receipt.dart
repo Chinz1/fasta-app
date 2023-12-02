@@ -1,8 +1,11 @@
+
 import 'package:fasta/colors/colors.dart';
 import 'package:fasta/core/app_state.dart';
+import 'package:fasta/extension/string.dart';
 import 'package:fasta/global_widgets/app_bars/app_bar_back_button.dart';
+import 'package:fasta/global_widgets/notifications/notify.dart';
+import 'package:fasta/push_notification/NotificationsView.dart';
 import 'package:fasta/shipping/application/bloc/shipment_handler_bloc.dart';
-import 'package:fasta/shipping/domain/entity/delivery.dart';
 import 'package:fasta/shipping/domain/entity/delivery_model.dart';
 import 'package:fasta/theming/size_config.dart';
 import 'package:fasta/typography/text_styles.dart';
@@ -25,9 +28,6 @@ class _OrderReceiptState extends State<OrderReceipt> {
     super.didChangeDependencies();
     // arg = (ModalRoute.of(context)?.settings.arguments as Trip);
     arg = (ModalRoute.of(context)?.settings.arguments as DeliverySummary?);
-    context
-        .read<ShipmentHandlerBloc>()
-        .add(ShipmentHandlerEvent.getADelivery(arg!.id, Owner.user));
   }
 
   @override
@@ -37,6 +37,7 @@ class _OrderReceiptState extends State<OrderReceipt> {
       backgroundColor: FastaColors.primary2,
       appBar: AppBarWithBackButton(
         onPressed: () => Navigator.pop(context),
+        iconPressed: () => Navigator.pushNamed(context, NotificationsView.route),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -65,6 +66,7 @@ class _OrderReceiptState extends State<OrderReceipt> {
                     listener: (context, state) {
                   // TODO: implement listener
                 }, builder: (context, state) {
+                  // log(state.delivery?.rating.rating);
                   if (state.status == AppState.success) {
                     return Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -86,43 +88,55 @@ class _OrderReceiptState extends State<OrderReceipt> {
                           ),
                           OrderInfo(
                             name: 'Pickup point',
-                            value: Text(
-                                state.delivery!.deliverySummary.fromAddress,
-                                style: FastaTextStyle.subtitleHard),
+                            value: Expanded(
+                              child: Text(
+                                  state.delivery!.deliverySummary.fromAddress,
+                                  textAlign: TextAlign.end,
+                                  style: FastaTextStyle.subtitleHard),
+                            ),
                           ),
                           OrderInfo(
-                            name: 'Items',
-                            value: Text(state.delivery!.sender.items,
+                            name: 'Tip',
+                            value: Text(state.delivery!.tip.amount,
                                 style: FastaTextStyle.subtitleHard),
                           ),
                           OrderInfo(
                             name: 'Delivery Point',
-                            value: Text(
-                                state.delivery!.deliverySummary.toAddress,
-                                style: FastaTextStyle.subtitleHard),
+                            value: Expanded(
+                              child: Text(
+                                  state.delivery!.deliverySummary.toAddress,
+                                  textAlign: TextAlign.end,
+                                  style: FastaTextStyle.subtitleHard),),
                           ),
                           OrderInfo(
-                            name: 'Items',
-                            value: Text(state.delivery!.sender.items,
+                            name: 'Items state',
+                            value: Text(state.delivery!.sender.itemState,
                                 style: FastaTextStyle.subtitleHard),
                           ),
                           OrderInfo(
                             name: 'Rating',
-                            value: Row(
-                              children: List.generate(
-                                  int.parse(
-                                      (state.delivery!.rating.rating.isEmpty)
-                                          ? '0'
-                                          : state.delivery!.rating.rating),
-                                  (index) {
-                                return const Icon(Icons.star,
-                                    color: FastaColors.green);
-                              }),
-                            ),
+                            value: Row(children: [
+                              ...List.generate(
+                                int.parse(state.delivery!.rating.rating.isEmpty
+                                    ? '0'
+                                    : state.delivery!.rating.rating),
+                                (index) => const Icon(Icons.star,
+                                    color: FastaColors.green),
+                              ).map((e) => e).toList(),
+                              ...List.generate(
+                                5 -
+                                    int.parse(
+                                        state.delivery!.rating.rating.isEmpty
+                                            ? '0'
+                                            : state.delivery!.rating.rating),
+                                (index) => const Icon(Icons.star_border_outlined,
+                                    color: FastaColors.green),
+                              ).map((e) => e).toList()
+                            ]),
                           ),
                           OrderInfo(
                             name: 'Depature time',
-                            value: Text(state.delivery!.deliverySummary.endTime,
+                            value: Text(state.delivery!.deliverySummary.endTime.toDateTime,
                                 style: FastaTextStyle.subtitleHard),
                           ),
                           OrderInfo(
@@ -131,8 +145,8 @@ class _OrderReceiptState extends State<OrderReceipt> {
                                 style: FastaTextStyle.subtitleHard),
                           ),
                           OrderInfo(
-                            name: 'Arrival time',
-                            value: Text(state.delivery!.deliverySummary.endTime,
+                            name: 'Distance',
+                            value: Text(state.delivery!.deliverySummary.distance+ ' km',
                                 style: FastaTextStyle.subtitleHard),
                           ),
                           OrderInfo(
@@ -151,23 +165,28 @@ class _OrderReceiptState extends State<OrderReceipt> {
             ),
             Align(
               alignment: Alignment.center,
-              child: Container(
-                  height: 40.h,
-                  width: 141.w,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Icon(Icons.cloud, size: 13.h),
-                      Text(
-                        'Download Receipt',
-                        style: FastaTextStyle.subtitleHard,
-                      )
-                    ],
-                  ),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: FastaColors.grey11),
-                      color: FastaColors.grey10,
-                      borderRadius: BorderRadius.circular(8.h))),
+              child: GestureDetector(
+                onTap: (){
+                  Notify.error(context, 'Download Receipt is Not Avaiable Yet');
+                },
+                child: Container(
+                    height: 40.h,
+                    width: 141.w,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Icon(Icons.cloud, size: 13.h),
+                        Text(
+                          'Download Receipt',
+                          style: FastaTextStyle.subtitleHard,
+                        )
+                      ],
+                    ),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: FastaColors.grey11),
+                        color: FastaColors.grey10,
+                        borderRadius: BorderRadius.circular(8.h))),
+              ),
             ),
             SizedBox(
               height: 112.h,
@@ -198,47 +217,3 @@ class OrderInfo extends StatelessWidget {
   }
 }
 
-class _ReceiptContent {
-  final String name;
-  final Widget value;
-  const _ReceiptContent({required this.name, required this.value});
-}
-
-List<_ReceiptContent> _data = [
-  _ReceiptContent(
-      name: 'Items',
-      value: Text('Bone Straight, Shower cap',
-          style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Order No',
-      value: Text('#1785849348', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Rider',
-      value: Text('John Snow', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Pickup point',
-      value:
-          Text('Computer Village Ikeja', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Delivery Point',
-      value: Text('Ogudu GRA', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Rating',
-      value: Row(
-        children: List.generate(5, (index) {
-          return Icon(Icons.star, color: FastaColors.green);
-        }),
-      )),
-  _ReceiptContent(
-      name: 'Depature time',
-      value: Text('4:30 PM', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Payment method',
-      value: Text('Card', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Arrival time',
-      value: Text('6:30PM', style: FastaTextStyle.subtitleHard)),
-  _ReceiptContent(
-      name: 'Cost',
-      value: Text('NGN 1400', style: FastaTextStyle.subtitleHard)),
-];

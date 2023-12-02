@@ -8,7 +8,9 @@ class ShipmentHandlerState with _$ShipmentHandlerState {
       required AppState status,
       LocationPointArg? address,
       DeliveryInvitation? pendingInvitations,
+      // bool is
       String? deliveryEstimate,
+      Set<Marker>? riders,
       DeliveryModel? delivery,
       @Deprecated('replace with deliverySummary')
       List<DeliverySummary>? deliverySummary,

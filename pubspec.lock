@@ -294,6 +294,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.4"
+  flutter_credit_card:
+    dependency: "direct main"
+    description:
+      name: flutter_credit_card
+      sha256: "6dcee5b9fcb61ec7e57564e8394385e0550980ad91688717100645b4f09da72d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   flutter_google_places:
     dependency: "direct main"
     description:
@@ -488,6 +496,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.20-nullsafety.5"
+  google_sign_in:
+    dependency: "direct main"
+    description:
+      name: google_sign_in
+      sha256: a8a411a395935e0cef56172298dfeaa7f3556babc56912d98a3b761106a470c2
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.0"
+  google_sign_in_android:
+    dependency: transitive
+    description:
+      name: google_sign_in_android
+      sha256: "23f5f2ac9c007bf0cf02380baaa67fff039efbf38b7a2a285c376c753f9767fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.1"
+  google_sign_in_ios:
+    dependency: transitive
+    description:
+      name: google_sign_in_ios
+      sha256: "8b80074ccda41b62553010b311506f5022f7d2701e4f22765546b3125450f9f3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.0"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      sha256: "252d0fadcd1e7939f1e00602eca1020b585d448aaa4b87c33137ca8717cd9e87"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      sha256: "5b35c221169a7b3e0fc15043ac09102ef542300ef92f2e1f05d5d8efde263af5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.2"
   graphs:
     dependency: transitive
     description:
@@ -544,6 +592,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.0"
+  infinite_scroll_pagination:
+    dependency: "direct main"
+    description:
+      name: infinite_scroll_pagination
+      sha256: eedd3098085c4a70f189615b8e78d9f6484ef92dedcd7762596ca874c21250fc
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.17.0"
   io:
     dependency: transitive
     description:
@@ -640,6 +704,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  onesignal_flutter:
+    dependency: "direct main"
+    description:
+      name: onesignal_flutter
+      sha256: "92a1d83a5cf1a4186ffd7d9d14d7e16890ae0cad42aa39586ecff3e4b00e1218"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.2"
   package_config:
     dependency: transitive
     description:
@@ -816,6 +888,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: "93982981971e812c94d4a6fa3a57b89f9ec12b38b6380cd3c1370c3b01e4580e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   rounded_loading_button:
     dependency: "direct main"
     description:
@@ -853,6 +933,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_tools:
+    dependency: transitive
+    description:
+      name: sliver_tools
+      sha256: f9cc825c3c5311021643d660c553571fc836e6906e2188568433391905ba215d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.7"
   socket_io_client:
     dependency: "direct main"
     description:
